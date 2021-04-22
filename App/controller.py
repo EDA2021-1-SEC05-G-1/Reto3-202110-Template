@@ -1,4 +1,4 @@
-﻿"""
+"""
  * Copyright 2020, Departamento de sistemas y Computación,
  * Universidad de Los Andes
  *
@@ -21,7 +21,8 @@
  """
 
 import config as cf
-import model
+from App import model
+import datetime
 import csv
 
 
@@ -30,9 +31,27 @@ El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 # Inicialización del Catálogo de libros
+def init():
+    """
+    Llama la funcion de inicializacion  del modelo.
+    """
+    # catalog es utilizado para interactuar con el modelo
+    analyzer = model.newAnalyzer()
+    return analyzer
 
 # Funciones para la carga de datos
-
+def loadData(analyzer, contexto):
+    """
+    Carga los datos de los archivos CSV en el modelo
+    """
+    contexto = cf.data_dir + contexto
+    input_file = csv.DictReader(open(contexto, encoding="utf-8"),delimiter=",")
+    for track in input_file:
+        model.addTrack(analyzer, track)
+    return analyzer
 # Funciones de ordenamiento
 
+
 # Funciones de consulta sobre el catálogo
+def req1(caracteristica,minimo,maximo,cont):
+    return model.req1
