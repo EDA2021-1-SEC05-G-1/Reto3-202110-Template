@@ -76,18 +76,33 @@ while True:
         i=0
         new=it.newIterator(x)
         cantidad=0
+        cantidad2=0
         lst=lt.newList("SINGLE_LINKED")
-        for f in range(0,lt.size(x)):#+1
-            a=lt.getElement(x,f)
-            cantidad+=lt.size(a)
-            for n in range(0,lt.size(x)+1):#+1 para que se recorra todo
-                f=lt.getElement(a,n)
-                n=mp.get(f,'user_id')
-                t=me.getValue(n)
-                if lt.isPresent(lst,t)==0:
-                    lt.addLast(lst,t)
-        print(lt.size(lst))
-        print(cantidad)
+        paaa=lt.newList("SINGLE_LINKED")
+        while it.hasNext(new):
+            l=it.next(new)
+            cantidad2+=lt.size(l)
+            nuevo=it.newIterator(l)
+            p=0
+            while it.hasNext(nuevo):
+                pedazo=it.next(nuevo)
+                ax=mp.get(pedazo,'user_id')
+                tax=me.getValue(ax)
+                if lt.isPresent(paaa,tax)==0:
+                    lt.addLast(paaa,tax)
+        print(lt.size(paaa))
+        print(cantidad2)
+       # for f in range(0,lt.size(x)):#+1
+        #    a=lt.getElement(x,f)
+         #   cantidad+=lt.size(a)
+          #  for n in range(0,lt.size(a)+1):#+1 para que se recorra todo
+           #     f=lt.getElement(a,n)
+            #    n=mp.get(f,'user_id')
+             #   t=me.getValue(n)
+              #  if lt.isPresent(lst,t)==0:
+               #     lt.addLast(lst,t)
+       # print(lt.size(lst))
+        #print(cantidad)
         #Hacer conteo y un cmpfunction con el tadlist
        # tad=lt.newList('ARRAY_LIST')
         #lista_n=[]
