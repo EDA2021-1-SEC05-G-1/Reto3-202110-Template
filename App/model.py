@@ -27,7 +27,7 @@
 import datetime
 import config as cf
 from DISClib.ADT import list as lt
-from DISClib.ADT import map as m
+from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.ADT import orderedmap as om
@@ -55,8 +55,10 @@ def newAnalyzer():
                 'energy':None,
                 'danceability':None,
                 'valence':None,
+                'tempo':None,
                 'acousticness':None,
                 'artist_id':None
+                #'hashtag':None
                 }
     analyzer['tracks'] = lt.newList('SINGLE_LINKED', compareIds)
     for parte in analyzer:
@@ -73,70 +75,28 @@ def addTrack(analyzer, track):
     lt.addLast(analyzer['tracks'], track)
     for caracteristica in analyzer:
         if caracteristica!='tracks':
-            updatetrack(analyzer[caracteristica], track,caracteristica)
+            updatetrack(analyzer[caracteristica], track,caracteristica,analyzer)
     return analyzer
 
-
-def updatetrack(map, track,caracteristica):
-    """
-    Se toma la fecha del crimen y se busca si ya existe en el arbol
-    dicha fecha.  Si es asi, se adiciona a su lista de crimenes
-    y se actualiza el indice de tipos de crimenes.
-
-    Si no se encuentra creado un nodo para esa fecha en el arbol
-    se crea y se actualiza el indice de tipos de crimenes
-    """
-    trackdate = track[caracteristica]
-    entry = om.get(map, trackdate)
+def updatetrack(map,track,caracteristica,catalogo):
+    data = track[caracteristica]
+    entry = om.get(map, data)
     if entry is None:
-        datentry = newDataEntry(track,caracteristica)
-        om.put(map, trackdate, datentry)
+        lst=lt.newList('ARRAY_LIST')
     else:
-        datentry = me.getValue(entry)
-    addDateIndex(datentry, track,caracteristica)
+        lst = me.getValue(entry)
+    informacion_track=newDataEntry(catalogo,track)
+    lt.addLast(lst,informacion_track)
+    om.put(map, data, lst)
     return map
-
-def addDateIndex(datentry, track,caracteristica):
-    """
-    Actualiza un indice de tipo de crimenes.  Este indice tiene una lista
-    de crimenes y una tabla de hash cuya llave es el tipo de crimen y
-    el valor es una lista con los crimenes de dicho tipo en la fecha que
-    se está consultando (dada por el nodo del arbol)
-    """
-    lst = datentry['lst'+str(caracteristica)]
-    lt.addLast(lst, track)
-    trackindex = datentry[str(caracteristica)+"de"]
-    offentry = m.get(trackindex, track[caracteristica]) #Poner lo que pide el usuario para el req1
-    if (offentry is None):
-        entry = newOffenseEntry(track[caracteristica], track,caracteristica)
-        lt.addLast(entry[str(caracteristica)+"oe"], track)
-        m.put(trackindex, track[caracteristica], entry)
-    else:
-        entry = me.getValue(offentry)
-        lt.addLast(entry[str(caracteristica)+"oe"], track)
-    return datentry
-
-def newOffenseEntry(offensegrp, crime,caracteristica):
-    """
-    Crea una entrada en el indice por tipo de crimen, es decir en
-    la tabla de hash, que se encuentra en cada nodo del arbol.
-    """
-    ofentry = {caracteristica: None, (str(caracteristica)+"oe"): None}
-    ofentry[caracteristica] = offensegrp
-    ofentry[(str(caracteristica)+"oe")] = lt.newList('SINGLELINKED', comparetrackindex)
-    return ofentry
-
-def newDataEntry(track,caracteristica):
-    """
-    Crea una entrada en el indice por fechas, es decir en el arbol
-    binario.
-    """
-    entry = {(str(caracteristica)+"de"): None, ('lst'+str(caracteristica)): None}
-    entry[(str(caracteristica)+"de")] = m.newMap(numelements=30,
-                                     maptype='PROBING',
-                                     comparefunction=comparetrackindex)
-    entry[('lst'+str(caracteristica))] = lt.newList('SINGLE_LINKED', compareDates)
-    return entry
+def newDataEntry(catalogo,track):
+    entrada = mp.newMap(numelements=10,maptype='PROBING',loadfactor=0.5)
+    for caracteristica in catalogo:
+        if caracteristica!='tracks':
+            mp.put(entrada,caracteristica,track[caracteristica])
+    mp.put(entrada,'track_id',track['track_id'])
+    mp.put(entrada,'user_id',track['user_id'])
+    return entrada
 
 # Funciones para creacion de datos
 

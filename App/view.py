@@ -28,6 +28,7 @@ from DISClib.ADT import orderedmap as om
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import orderedmapstructure as mo
 from DISClib.DataStructures import mapentry as me
+from DISClib.DataStructures import listiterator as it
 assert cf
 
 
@@ -50,6 +51,7 @@ def printMenu():
 
 catalog = None
 contexto= "context_content_features-small.csv"
+user="user_track_hashtag_timestamp-small.csv"
 """
 Menu principal
 """
@@ -63,14 +65,37 @@ while True:
         cont = controller.init()
     elif int(inputs[0]) == 2:
         print("Cargando información de los archivos ....")
-        controller.loadData(cont, contexto)
+        controller.loadData(cont, contexto,user)
 
         print("Hay "+str(lt.size(cont["tracks"]))+" tracks cargados.")
-       
     elif int(inputs[0]) ==3:
         caracteristica=str(input("Ingrese una caracteristica: "))
         minimo=input("Ingrese el valor minimo del contenido: ")
-        maximo=input("Ingrese el valor minimo del contenido: ")
+        maximo=input("Ingrese el valor maximo del contenido: ")
+        x=om.values(cont[caracteristica],minimo,maximo)
+        i=0
+        new=it.newIterator(x)
+        cantidad=0
+        lst=lt.newList("SINGLE_LINKED")
+        for f in range(0,lt.size(x)):#+1
+            a=lt.getElement(x,f)
+            cantidad+=lt.size(a)
+            for n in range(0,lt.size(x)+1):#+1 para que se recorra todo
+                f=lt.getElement(a,n)
+                n=mp.get(f,'user_id')
+                t=me.getValue(n)
+                if lt.isPresent(lst,t)==0:
+                    lt.addLast(lst,t)
+        print(lt.size(lst))
+        print(cantidad)
+        #Hacer conteo y un cmpfunction con el tadlist
+       # tad=lt.newList('ARRAY_LIST')
+        #lista_n=[]
+        #i=1
+        #while i<lt.size(x):
+         #   if lt.getElement(x,i)
+        #tad=lt.newList()
+        #cont=mp.get()
        # nueva=lt.newList() #Nueva lista para empezar a meter para no repetir artistas
       #  validacion=om.values(cont[caracteristica],minimo,maximo)#Hacer un filtrado de la caracteristica desde lo que quiere el usuario
        # for x in range(1+lt.size(validacion)):
@@ -89,7 +114,17 @@ while True:
         #Con el fin de que a partir de un catalogo base mirar que no se repitan losa artistas para ir guardando los datos,
         #Sin embargo, no entendimos ni logramos correctamente como sacar los datos del catalogo
         #Ahora bien, logramos llegar a tener un catalogo en base a las caracteristicas del contexto en el que se carga correctamente cada dato
-        
+  #  variable=input('Va a ingresar un genero musical unico?: ')
+  #  diccionario={'regge':(60,90}....}
+  #  if varibale=="Si":
+  #      min=input("minimo: ")
+   #     max=input("maximo: ")
+     #   nombre=input("Nombre: ")
+    #    x=om.values(cont['tempo'],min,max)
+      #  diccionario[nombre]=x
+
+    
+
     else:
         sys.exit(0)
 sys.exit(0)

@@ -40,14 +40,22 @@ def init():
     return analyzer
 
 # Funciones para la carga de datos
-def loadData(analyzer, contexto):
+def loadData(analyzer, contexto,user):
     """
     Carga los datos de los archivos CSV en el modelo
     """
     contexto = cf.data_dir + contexto
     input_file = csv.DictReader(open(contexto, encoding="utf-8"),delimiter=",")
+    user= cf.data_dir + user
+    input_file2 = csv.DictReader(open(user, encoding="utf-8"),delimiter=",")
+    lst=[]
+    for hashtag in input_file2:
+        lst+=[hashtag["hashtag"]]
+    i=0
     for track in input_file:
+        track["hashtag"]=lst[i]
         model.addTrack(analyzer, track)
+        i+=1
     return analyzer
 # Funciones de ordenamiento
 
