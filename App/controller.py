@@ -63,3 +63,5 @@ def loadData(analyzer, contexto,user):
 # Funciones de consulta sobre el catálogo
 def req1(caracteristica,minimo,maximo,cont):
     return model.req1
+def req2(cont,minimoE,maximoE,minimoD,maximoD):
+    return model.req2(cont,minimoE,maximoE,minimoD,maximoD)

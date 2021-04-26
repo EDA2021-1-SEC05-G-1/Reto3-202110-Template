@@ -30,6 +30,7 @@ from DISClib.DataStructures import orderedmapstructure as mo
 from DISClib.DataStructures import mapentry as me
 from DISClib.DataStructures import listiterator as it
 assert cf
+import random
 
 
 """
@@ -46,6 +47,7 @@ def printMenu():
     print("1- Cargar el catálogo")
     print("2- Cargar información en el catalogo")
     print("3- Caracterizar las reproducciones")
+    print("4- Encontrar música para festejar")
     print("0-Salir")
     print("*******************************************")
 
@@ -81,17 +83,61 @@ while True:
         paaa=lt.newList("SINGLE_LINKED")
         while it.hasNext(new):
             l=it.next(new)
-            cantidad2+=lt.size(l)
+            cantidad2+=lt.size(l) #Reproducciones
             nuevo=it.newIterator(l)
             p=0
             while it.hasNext(nuevo):
                 pedazo=it.next(nuevo)
-                ax=mp.get(pedazo,'user_id')
+                ax=mp.get(pedazo,'artist_id')
                 tax=me.getValue(ax)
                 if lt.isPresent(paaa,tax)==0:
                     lt.addLast(paaa,tax)
-        print(lt.size(paaa))
-        print(cantidad2)
+        print(lt.size(paaa)) #Cantidad de artistas unicos
+        print(cantidad2) #Reproducciones se pasa por 12
+    elif int(inputs[0]) ==4:
+        minimoE=input("Ingrese el valor minimo de la caracteristica Energy: ")
+        maximoE=input("Ingrese el valor maximo de la caracteristica Energy: ")
+        minimoD=input("Ingrese el valor minimo de la caracteristica Danceability: ")
+        maximoD=input("Ingrese el valor maximo de la caracteristica Danceability: ")
+        answer=controller.req2(cont,minimoE,maximoE,minimoD,maximoD)
+        cantidad=lt.size(answer)
+        pista=lt.newList("ARRAY_LIST")
+        peq1=random.randint(1,cantidad)
+        #pes=lt.getElement(answer,1) #Es lo mismo que it.next(f)
+        print('Energy esta entre '+str(minimoE)+ " y "+str(maximoE))
+        print("Danceability esta entre "+str(minimoD)+ " y "+str(maximoD))
+        print("Los track unicos en eventos son: "+str(cantidad))
+        x=1
+        while x<=5:
+            rand=random.randint(1,cantidad)
+            track=lt.getElement(answer,rand) #Lo mismo que it.next(de un iterador de lista)
+            id=me.getValue(mp.get(track,'track_id')) #Saco pareja llave-valor del track_id y su valor (track_id respectivo del elemento), para luego sacar su valor(track_id)
+            energia=me.getValue(mp.get(track,'energy'))
+            danceability=me.getValue(mp.get(track,'danceability'))
+            print("*******************************************")
+            print('Track '+str(x)+':'+str(id)+ " with energy of "+str(energia)+" and danceability of "+str(danceability))
+            x+=1
+        #pista=lt.subList(answer,1,1)
+        #x=1
+        #f=it.newIterator(pista)
+        #while it.hasNext(f):
+ #           track=it.next(f)#Saca el mapa de 1 elemento #Lo mismo que lt.getElement()
+  #          print(track)
+   #         id=me.getValue(mp.get(track,'track_id')) #Saco pareja llave-valor del track_id y su valor (track_id respectivo del elemento), para luego sacar su valor(track_id)
+    #        energia=me.getValue(mp.get(track,'energy'))
+     #       danceability=me.getValue(mp.get(track,'danceability'))
+      #      print("*******************************************")
+       #     print('Track '+str(x)+':'+str(id)+ " with energy of "+str(energia)+" and danceability of "+str(danceability))
+        #    x+=1
+            #Literalmente van a imprimir los primeros 5 elementos de la lista que cumple con los criterios dados por el usuario
+            #Por el orden en que se guardaron los datos (1 se guardaron los de energy y luego los de danceability que cumplian con los criterios)
+        #0(n^2 + n^2)
+        #return lt.size(lst),pista
+
+    else:
+        sys.exit(0)
+sys.exit(0)
+
        # for f in range(0,lt.size(x)):#+1
         #    a=lt.getElement(x,f)
          #   cantidad+=lt.size(a)
@@ -137,9 +183,4 @@ while True:
      #   nombre=input("Nombre: ")
     #    x=om.values(cont['tempo'],min,max)
       #  diccionario[nombre]=x
-
     
-
-    else:
-        sys.exit(0)
-sys.exit(0)

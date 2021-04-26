@@ -32,7 +32,8 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.ADT import orderedmap as om
 assert cf
-
+from DISClib.DataStructures import orderedmapstructure as mo
+from DISClib.DataStructures import listiterator as it
 """
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
 los mismos.
@@ -106,6 +107,43 @@ def req1(caracteristica,minimo,maximo,cont):
     lst=om.keys(cont[caracteristica],minimo,maximo)
     size=lt.size(lst)
     return size
+def req2(cont,minimoE,maximoE,minimoD,maximoD): #Cont es el catalogo
+    energy=om.values(cont['energy'],minimoE,maximoE)
+    dance=om.values(cont['danceability'],minimoD,maximoD)
+    new=it.newIterator(energy)
+    few=it.newIterator(dance)
+    cantidad=0
+    cantidad2=0
+    lst=lt.newList("SINGLE_LINKED")
+    paaa=lt.newList("SINGLE_LINKED")
+    while it.hasNext(new):
+        l=it.next(new)
+        nuevo=it.newIterator(l)
+        while it.hasNext(nuevo):
+            pedazo=it.next(nuevo) #Esto devuelve un mapa de la lista iterando (mapa de la lista(cada elemento))
+            ax=mp.get(pedazo,'danceability')
+            nex=mp.get(pedazo,'track_id')#Devuelve la llave danceability y el valor respectivo del mapa en forma de diccionario
+            tax=me.getValue(ax)#Devuelve el valor de danceability del track sacado en el mapa de it.next(video)
+            fex=me.getValue(nex)
+            if float(tax)>=float(minimoD) and float(tax)<=float(maximoD):
+                if lt.isPresent(lst,fex)==0:
+                    lt.addLast(paaa,pedazo)
+                    lt.addLast(lst,fex)
+    new=it.newIterator(dance)
+    while it.hasNext(new):
+        l=it.next(new)
+        nuevo=it.newIterator(l)
+        while it.hasNext(nuevo):
+            pedazo=it.next(nuevo) #Esto devuelve un mapa de la lista iterando (mapa de la lista(cada elemento))
+            ax=mp.get(pedazo,'energy') #Devuelve la llave energy y el valor respectivo del mapa en forma de diccionario
+            tax=me.getValue(ax)#Devuelve el valor de energy del track sacado en el mapa de it.next(video)
+            yex=mp.get(pedazo,'track_id')
+            tex=me.getValue(yex)
+            if float(tax)>=float(minimoE) and float(tax)<=float(maximoE):
+                if lt.isPresent(lst,tex)==0:
+                    lt.addLast(paaa,pedazo)
+                    lt.addLast(lst,tex)
+    return paaa
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
