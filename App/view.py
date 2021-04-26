@@ -48,6 +48,7 @@ def printMenu():
     print("2- Cargar información en el catalogo")
     print("3- Caracterizar las reproducciones")
     print("4- Encontrar música para festejar")
+    print("5- Encontrar música para estudiar")
     print("0-Salir")
     print("*******************************************")
 
@@ -65,11 +66,15 @@ while True:
         print("\nInicializando....")
         # cont es el controlador que se usará de acá en adelante
         cont = controller.init()
+        print("Se creo el catalogo sin información correctamente.")
     elif int(inputs[0]) == 2:
         print("Cargando información de los archivos ....")
         controller.loadData(cont, contexto,user)
 
         print("Hay "+str(lt.size(cont["tracks"]))+" tracks cargados.")
+        print("Hay "+str(om.size(cont['artist_id']))+" artistas unicos cargados.")
+        print("Hay "+str(om.size(cont['created_at']))+" eventos cargados.")
+
     elif int(inputs[0]) ==3:
         caracteristica=str(input("Ingrese una caracteristica: "))
         minimo=input("Ingrese el valor minimo del contenido: ")
@@ -102,14 +107,12 @@ while True:
         answer=controller.req2(cont,minimoE,maximoE,minimoD,maximoD)
         cantidad=lt.size(answer)
         pista=lt.newList("ARRAY_LIST")
-        peq1=random.randint(1,cantidad)
-        #pes=lt.getElement(answer,1) #Es lo mismo que it.next(f)
         print('Energy esta entre '+str(minimoE)+ " y "+str(maximoE))
         print("Danceability esta entre "+str(minimoD)+ " y "+str(maximoD))
         print("Los track unicos en eventos son: "+str(cantidad))
         x=1
         while x<=5:
-            rand=random.randint(1,cantidad)
+            rand=random.randint(1,cantidad)# Aqui buscamos obtener un numero dentro del rango para poder usar el lt.getElement() de una pos cualquiera para imprimir
             track=lt.getElement(answer,rand) #Lo mismo que it.next(de un iterador de lista)
             id=me.getValue(mp.get(track,'track_id')) #Saco pareja llave-valor del track_id y su valor (track_id respectivo del elemento), para luego sacar su valor(track_id)
             energia=me.getValue(mp.get(track,'energy'))
@@ -117,22 +120,29 @@ while True:
             print("*******************************************")
             print('Track '+str(x)+':'+str(id)+ " with energy of "+str(energia)+" and danceability of "+str(danceability))
             x+=1
-        #pista=lt.subList(answer,1,1)
-        #x=1
-        #f=it.newIterator(pista)
-        #while it.hasNext(f):
- #           track=it.next(f)#Saca el mapa de 1 elemento #Lo mismo que lt.getElement()
-  #          print(track)
-   #         id=me.getValue(mp.get(track,'track_id')) #Saco pareja llave-valor del track_id y su valor (track_id respectivo del elemento), para luego sacar su valor(track_id)
-    #        energia=me.getValue(mp.get(track,'energy'))
-     #       danceability=me.getValue(mp.get(track,'danceability'))
-      #      print("*******************************************")
-       #     print('Track '+str(x)+':'+str(id)+ " with energy of "+str(energia)+" and danceability of "+str(danceability))
-        #    x+=1
-            #Literalmente van a imprimir los primeros 5 elementos de la lista que cumple con los criterios dados por el usuario
-            #Por el orden en que se guardaron los datos (1 se guardaron los de energy y luego los de danceability que cumplian con los criterios)
-        #0(n^2 + n^2)
-        #return lt.size(lst),pista
+        
+    elif int(inputs[0]) ==5:
+        minimoI=input("Ingrese el valor minimo de la caracteristica instrumentalness: ")
+        maximoI=input("Ingrese el valor maximo de la caracteristica instrumentalness: ")
+        minimoT=input("Ingrese el valor minimo de la caracteristica tempo: ")
+        maximoT=input("Ingrese el valor maximo de la caracteristica tempo: ")
+        answer=controller.req3(cont,minimoI,maximoI,minimoT,maximoT)
+        cantidad=lt.size(answer)
+        pista=lt.newList("ARRAY_LIST")
+        #pes=lt.getElement(answer,1) #Es lo mismo que it.next(f)
+        print('Instrumentalness esta entre '+str(minimoI)+ " y "+str(maximoI))
+        print("Tempo esta entre "+str(minimoT)+ " y "+str(maximoT))
+        print("Los track unicos en eventos son: "+str(cantidad))
+        x=1
+        while x<=5:
+            rand=random.randint(1,cantidad)
+            track=lt.getElement(answer,rand) #Lo mismo que it.next(de un iterador de lista)
+            id=me.getValue(mp.get(track,'track_id')) #Saco pareja llave-valor del track_id y su valor (track_id respectivo del elemento), para luego sacar su valor(track_id)
+            instrumental=me.getValue(mp.get(track,'instrumentalness'))
+            tempo=me.getValue(mp.get(track,'tempo'))
+            print("*******************************************")
+            print('Track '+str(x)+':'+str(id)+ " with instrumentalness of "+str(instrumental)+" and tempo of "+str(tempo))
+            x+=1
 
     else:
         sys.exit(0)

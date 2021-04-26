@@ -58,8 +58,9 @@ def newAnalyzer():
                 'valence':None,
                 'tempo':None,
                 'acousticness':None,
-                'artist_id':None
-                #'hashtag':None
+                'artist_id':None,
+                'created_at':None,
+                'hashtag':None
                 }
     analyzer['tracks'] = lt.newList('SINGLE_LINKED', compareIds)
     for parte in analyzer:
@@ -111,9 +112,6 @@ def req2(cont,minimoE,maximoE,minimoD,maximoD): #Cont es el catalogo
     energy=om.values(cont['energy'],minimoE,maximoE)
     dance=om.values(cont['danceability'],minimoD,maximoD)
     new=it.newIterator(energy)
-    few=it.newIterator(dance)
-    cantidad=0
-    cantidad2=0
     lst=lt.newList("SINGLE_LINKED")
     paaa=lt.newList("SINGLE_LINKED")
     while it.hasNext(new):
@@ -140,6 +138,40 @@ def req2(cont,minimoE,maximoE,minimoD,maximoD): #Cont es el catalogo
             yex=mp.get(pedazo,'track_id')
             tex=me.getValue(yex)
             if float(tax)>=float(minimoE) and float(tax)<=float(maximoE):
+                if lt.isPresent(lst,tex)==0:
+                    lt.addLast(paaa,pedazo)
+                    lt.addLast(lst,tex)
+    return paaa
+def req3(cont,minimoI,maximoI,minimoT,maximoT): #Cont es el catalogo
+    tempo=om.values(cont['tempo'],minimoT,maximoT)
+    instr=om.values(cont['instrumentalness'],minimoI,maximoI)
+    new=it.newIterator(tempo)
+    lst=lt.newList("SINGLE_LINKED")
+    paaa=lt.newList("SINGLE_LINKED")
+    while it.hasNext(new):
+        l=it.next(new)
+        nuevo=it.newIterator(l)
+        while it.hasNext(nuevo):
+            pedazo=it.next(nuevo) #Esto devuelve un mapa de la lista iterando (mapa de la lista(cada elemento))
+            ax=mp.get(pedazo,'instrumentalness')
+            nex=mp.get(pedazo,'track_id')#Devuelve la llave danceability y el valor respectivo del mapa en forma de diccionario
+            tax=me.getValue(ax)#Devuelve el valor de danceability del track sacado en el mapa de it.next(video)
+            fex=me.getValue(nex)
+            if float(tax)>=float(minimoI) and float(tax)<=float(maximoI):
+                if lt.isPresent(lst,fex)==0:
+                    lt.addLast(paaa,pedazo)
+                    lt.addLast(lst,fex)
+    new=it.newIterator(instr)
+    while it.hasNext(new):
+        l=it.next(new)
+        nuevo=it.newIterator(l)
+        while it.hasNext(nuevo):
+            pedazo=it.next(nuevo) #Esto devuelve un mapa de la lista iterando (mapa de la lista(cada elemento))
+            ax=mp.get(pedazo,'tempo') #Devuelve la llave energy y el valor respectivo del mapa en forma de diccionario
+            tax=me.getValue(ax)#Devuelve el valor de energy del track sacado en el mapa de it.next(video)
+            yex=mp.get(pedazo,'track_id')
+            tex=me.getValue(yex)
+            if float(tax)>=float(minimoT) and float(tax)<=float(maximoT):
                 if lt.isPresent(lst,tex)==0:
                     lt.addLast(paaa,pedazo)
                     lt.addLast(lst,tex)

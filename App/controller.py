@@ -65,3 +65,5 @@ def req1(caracteristica,minimo,maximo,cont):
     return model.req1
 def req2(cont,minimoE,maximoE,minimoD,maximoD):
     return model.req2(cont,minimoE,maximoE,minimoD,maximoD)
+def req3(cont,minimoT,maximoT,minimoI,maximoI):
+    return model.req3(cont,minimoT,maximoT,minimoI,maximoI)
