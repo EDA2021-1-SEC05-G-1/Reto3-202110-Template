@@ -87,12 +87,34 @@ def updatetrack(map,track,caracteristica,catalogo):
         lst=lt.newList('ARRAY_LIST')
     else:
         lst = me.getValue(entry)
-    informacion_track=newDataEntry(catalogo,track)
+    informacion_track=newDataEntry(catalogo,track,caracteristica)
     lt.addLast(lst,informacion_track)
     om.put(map, data, lst)
     return map
-def newDataEntry(catalogo,track):
-    entrada = mp.newMap(numelements=10,maptype='PROBING',loadfactor=0.5)
+def newDataEntry(catalogo,track,caracteristica):
+    if caracteristica=="instrumentalness":
+        entrada=mp.newMap(numelements=10,maptype='PROBING',loadfactor=0.5)
+    elif caracteristica =='speechiness':
+        entrada=mp.newMap(numelements=2430,maptype='PROBING',loadfactor=0.5)
+    elif caracteristica=='liveness':
+        entrada=mp.newMap(numelements=3290,maptype='PROBING',loadfactor=0.5)
+    elif caracteristica=='energy':
+        entrada=mp.newMap(numelements=2270,maptype='PROBING',loadfactor=0.5)
+    elif caracteristica=='danceability':
+        entrada=mp.newMap(numelements=1860,maptype='PROBING',loadfactor=0.5)
+    elif caracteristica=='valence':
+        entrada=mp.newMap(numelements=2950,maptype='PROBING',loadfactor=0.5)
+    elif caracteristica=='tempo':
+        entrada=mp.newMap(numelements=47170,maptype='PROBING',loadfactor=0.5)
+    elif caracteristica=='acousticness':
+        entrada=mp.newMap(numelements=8910,maptype='PROBING',loadfactor=0.5)
+    elif caracteristica=='artist_id':
+        entrada=mp.newMap(numelements=20830,maptype='PROBING',loadfactor=0.5)
+    elif caracteristica=='created_at':
+        entrada=mp.newMap(numelements=126000,maptype='PROBING',loadfactor=0.5)
+    elif caracteristica=='hashtag':
+        entrada=mp.newMap(numelements=3390,maptype='PROBING',loadfactor=0.5)
+    #entrada = mp.newMap(numelements=10,maptype='PROBING',loadfactor=0.5)
     for caracteristica in catalogo:
         if caracteristica!='tracks':
             mp.put(entrada,caracteristica,track[caracteristica])

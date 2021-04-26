@@ -52,7 +52,6 @@ def printMenu():
     print("0-Salir")
     print("*******************************************")
 
-catalog = None
 contexto= "context_content_features-small.csv"
 user="user_track_hashtag_timestamp-small.csv"
 """
@@ -69,12 +68,16 @@ while True:
         print("Se creo el catalogo sin información correctamente.")
     elif int(inputs[0]) == 2:
         print("Cargando información de los archivos ....")
-        controller.loadData(cont, contexto,user)
+        answer=controller.loadData(cont, contexto,user)
+        cont=answer[0]
 
         print("Hay "+str(lt.size(cont["tracks"]))+" tracks cargados.")
         print("Hay "+str(om.size(cont['artist_id']))+" artistas unicos cargados.")
         print("Hay "+str(om.size(cont['created_at']))+" eventos cargados.")
-
+        print('Hay '+str(om.size(cont['instrumentalness']))+" HASHTAG")
+    
+        print("Tiempo [ms]: ", f"{answer[1]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{answer[2]:.3f}")
     elif int(inputs[0]) ==3:
         caracteristica=str(input("Ingrese una caracteristica: "))
         minimo=input("Ingrese el valor minimo del contenido: ")
@@ -88,9 +91,9 @@ while True:
         paaa=lt.newList("SINGLE_LINKED")
         while it.hasNext(new):
             l=it.next(new)
-            cantidad2+=lt.size(l) #Reproducciones
+            cantidad2+=lt.size(l)
+            print(cantidad2) #Reproducciones
             nuevo=it.newIterator(l)
-            p=0
             while it.hasNext(nuevo):
                 pedazo=it.next(nuevo)
                 ax=mp.get(pedazo,'artist_id')
@@ -104,7 +107,8 @@ while True:
         maximoE=input("Ingrese el valor maximo de la caracteristica Energy: ")
         minimoD=input("Ingrese el valor minimo de la caracteristica Danceability: ")
         maximoD=input("Ingrese el valor maximo de la caracteristica Danceability: ")
-        answer=controller.req2(cont,minimoE,maximoE,minimoD,maximoD)
+        answers=controller.req2(cont,minimoE,maximoE,minimoD,maximoD)
+        answer=answers[0]
         cantidad=lt.size(answer)
         pista=lt.newList("ARRAY_LIST")
         print('Energy esta entre '+str(minimoE)+ " y "+str(maximoE))
@@ -120,13 +124,15 @@ while True:
             print("*******************************************")
             print('Track '+str(x)+':'+str(id)+ " with energy of "+str(energia)+" and danceability of "+str(danceability))
             x+=1
-        
+        print("Tiempo [ms]: ", f"{answers[1]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{answers[2]:.3f}")
     elif int(inputs[0]) ==5:
         minimoI=input("Ingrese el valor minimo de la caracteristica instrumentalness: ")
         maximoI=input("Ingrese el valor maximo de la caracteristica instrumentalness: ")
         minimoT=input("Ingrese el valor minimo de la caracteristica tempo: ")
         maximoT=input("Ingrese el valor maximo de la caracteristica tempo: ")
-        answer=controller.req3(cont,minimoI,maximoI,minimoT,maximoT)
+        answersa=controller.req3(cont,minimoI,maximoI,minimoT,maximoT)
+        asnwer=answersa[0]
         cantidad=lt.size(answer)
         pista=lt.newList("ARRAY_LIST")
         #pes=lt.getElement(answer,1) #Es lo mismo que it.next(f)
@@ -143,7 +149,8 @@ while True:
             print("*******************************************")
             print('Track '+str(x)+':'+str(id)+ " with instrumentalness of "+str(instrumental)+" and tempo of "+str(tempo))
             x+=1
-
+        print("Tiempo [ms]: ", f"{answersa[1]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{answersa[2]:.3f}")
     else:
         sys.exit(0)
 sys.exit(0)
