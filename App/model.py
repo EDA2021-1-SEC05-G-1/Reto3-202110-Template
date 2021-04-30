@@ -59,8 +59,8 @@ def newAnalyzer():
                 'tempo':None,
                 'acousticness':None,
                 'artist_id':None,
-                'created_at':None,
-                'hashtag':None
+                'created_at':None
+                #'hashtag':None
                 }
     analyzer['tracks'] = lt.newList('SINGLE_LINKED', compareIds)
     for parte in analyzer:
@@ -92,29 +92,29 @@ def updatetrack(map,track,caracteristica,catalogo):
     om.put(map, data, lst)
     return map
 def newDataEntry(catalogo,track,caracteristica):
-    if caracteristica=="instrumentalness":
-        entrada=mp.newMap(numelements=10,maptype='PROBING',loadfactor=0.5)
-    elif caracteristica =='speechiness':
-        entrada=mp.newMap(numelements=2430,maptype='PROBING',loadfactor=0.5)
-    elif caracteristica=='liveness':
-        entrada=mp.newMap(numelements=3290,maptype='PROBING',loadfactor=0.5)
-    elif caracteristica=='energy':
-        entrada=mp.newMap(numelements=2270,maptype='PROBING',loadfactor=0.5)
-    elif caracteristica=='danceability':
-        entrada=mp.newMap(numelements=1860,maptype='PROBING',loadfactor=0.5)
-    elif caracteristica=='valence':
-        entrada=mp.newMap(numelements=2950,maptype='PROBING',loadfactor=0.5)
-    elif caracteristica=='tempo':
-        entrada=mp.newMap(numelements=47170,maptype='PROBING',loadfactor=0.5)
-    elif caracteristica=='acousticness':
-        entrada=mp.newMap(numelements=8910,maptype='PROBING',loadfactor=0.5)
-    elif caracteristica=='artist_id':
-        entrada=mp.newMap(numelements=20830,maptype='PROBING',loadfactor=0.5)
-    elif caracteristica=='created_at':
-        entrada=mp.newMap(numelements=126000,maptype='PROBING',loadfactor=0.5)
-    elif caracteristica=='hashtag':
-        entrada=mp.newMap(numelements=3390,maptype='PROBING',loadfactor=0.5)
-    #entrada = mp.newMap(numelements=10,maptype='PROBING',loadfactor=0.5)
+    #if caracteristica=="instrumentalness":
+   #     entrada=mp.newMap(numelements=10,maptype='PROBING',loadfactor=0.5)
+  #  elif caracteristica =='speechiness':
+ #       entrada=mp.newMap(numelements=2430,maptype='PROBING',loadfactor=0.5)
+#    elif caracteristica=='liveness':
+    #    entrada=mp.newMap(numelements=3290,maptype='PROBING',loadfactor=0.5)
+   # elif caracteristica=='energy':
+  #      entrada=mp.newMap(numelements=2270,maptype='PROBING',loadfactor=0.5)
+ #   elif caracteristica=='danceability':
+#        entrada=mp.newMap(numelements=1860,maptype='PROBING',loadfactor=0.5)
+    #elif caracteristica=='valence':
+   #     entrada=mp.newMap(numelements=2950,maptype='PROBING',loadfactor=0.5)
+  #  elif caracteristica=='tempo':
+ #       entrada=mp.newMap(numelements=47170,maptype='PROBING',loadfactor=0.5)
+#    elif caracteristica=='acousticness':
+    #    entrada=mp.newMap(numelements=8910,maptype='PROBING',loadfactor=0.5)
+   # elif caracteristica=='artist_id':
+     #   entrada=mp.newMap(numelements=20830,maptype='PROBING',loadfactor=0.5)
+    #elif caracteristica=='created_at':
+    #    entrada=mp.newMap(numelements=126000,maptype='PROBING',loadfactor=0.5)
+    #elif caracteristica=='hashtag':
+        #entrada=mp.newMap(numelements=3390,maptype='PROBING',loadfactor=0.5)
+    entrada = mp.newMap(numelements=10,maptype='PROBING',loadfactor=0.5)
     for caracteristica in catalogo:
         if caracteristica!='tracks':
             mp.put(entrada,caracteristica,track[caracteristica])
@@ -126,10 +126,30 @@ def newDataEntry(catalogo,track,caracteristica):
 
 # Funciones de consulta
 def req1(caracteristica,minimo,maximo,cont):
-
-    lst=om.keys(cont[caracteristica],minimo,maximo)
-    size=lt.size(lst)
-    return size
+    x=om.values(cont[caracteristica],minimo,maximo)
+    i=0
+    new=it.newIterator(x)
+    cantidad=0
+    cantidad2=0
+    lst=lt.newList("SINGLE_LINKED")
+    paaa=lt.newList("SINGLE_LINKED")
+    while it.hasNext(new):
+        l=it.next(new)
+        cantidad2+=lt.size(l)
+        print(cantidad2)
+        #print(cantidad2) #Reproducciones
+        nuevo=it.newIterator(l)
+        while it.hasNext(nuevo):
+            pedazo=it.next(nuevo)
+            ax=mp.get(pedazo,'artist_id')
+            tax=me.getValue(ax)
+            if lt.isPresent(paaa,tax)==0:
+                lt.addLast(paaa,tax)
+    #print(lt.size(paaa)) #Cantidad de artistas unicos
+    #print(cantidad2)
+    tamano=lt.size(paaa)
+    respuesta=(tamano,cantidad2)
+    return respuesta
 def req2(cont,minimoE,maximoE,minimoD,maximoD): #Cont es el catalogo
     energy=om.values(cont['energy'],minimoE,maximoE)
     dance=om.values(cont['danceability'],minimoD,maximoD)
@@ -198,6 +218,29 @@ def req3(cont,minimoI,maximoI,minimoT,maximoT): #Cont es el catalogo
                     lt.addLast(paaa,pedazo)
                     lt.addLast(lst,tex)
     return paaa
+def req4(caracteristica,minimo,maximo,cont):
+    x=om.values(cont[caracteristica],minimo,maximo)
+    new=it.newIterator(x)
+    cantidad=0
+    cantidad2=0
+    lst=lt.newList("SINGLE_LINKED")
+    paaa=lt.newList("SINGLE_LINKED")
+    while it.hasNext(new):
+        l=it.next(new)
+        cantidad2+=lt.size(l)
+        nuevo=it.newIterator(l)
+        while it.hasNext(nuevo):
+            pedazo=it.next(nuevo)
+            ax=mp.get(pedazo,'artist_id')
+            tax=me.getValue(ax)
+            if lt.isPresent(paaa,tax)==0: #No esta presente si es 0 #Miramos si el artist_id esta ahí
+                lt.addLast(paaa,tax)
+                lt.addLast(lst,pedazo)
+    #print(lt.size(paaa)) #Cantidad de artistas unicos
+    #print(cantidad2)
+    tamano=lt.size(paaa)
+    respuesta=(tamano,cantidad2,lst)
+    return respuesta
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento

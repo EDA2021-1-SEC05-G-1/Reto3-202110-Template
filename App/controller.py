@@ -52,16 +52,33 @@ def loadData(analyzer, contexto,user):
     start_memory = getMemory()
     contexto = cf.data_dir + contexto
     input_file = csv.DictReader(open(contexto, encoding="utf-8"),delimiter=",")
-    user= cf.data_dir + user
-    input_file2 = csv.DictReader(open(user, encoding="utf-8"),delimiter=",")
-    lst=[]
-    for hashtag in input_file2:
-        lst+=[hashtag["hashtag"]]
-    i=0
+    #user= cf.data_dir + user
+    #input_file2 = csv.DictReader(open(user, encoding="utf-8"),delimiter=",")
+    #lst=[]
+    #for hashtag in input_file2:
+    #    lst+=[hashtag["hashtag"]]
+    #i=0"instrumentalness","liveness","speechiness","danceability","valence","loudness","tempo","acousticness",
+    # "energy","mode","key","artist_id","tweet_lang","track_id","created_at","lang","time_zone","user_id","id"
+    x=0 
     for track in input_file:
-        track["hashtag"]=lst[i]
+       # track["hashtag"]=lst[i] #No es lo mismo comparar str que con numeros
+        track['tempo']=float(track['tempo'])#Se habia hecho primero un orden de str(eterolexico?) Es necesario tenerlos en int
+        track['energy']=float(track['energy'])
+        track['liveness']=float(track['liveness'])
+        track['speechiness']=float(track['speechiness'])
+        track['danceability']=float(track['danceability'])
+        track['valence']=float(track['valence'])
+        track['loudness']=float(track['loudness'])
+        track['acousticness']=float(track['acousticness'])
+        track['energy']=float(track['energy'])
+        track['mode']=float(track['mode'])
+        track['key']=float(track['key'])
+        track['id']=int(track['id'])
         model.addTrack(analyzer, track)
-        i+=1
+        #x+=1
+        #if x==1000:
+        #    break
+        #i+=1
     
     stop_memory = getMemory()
     stop_time = getTime()
@@ -107,6 +124,19 @@ def req3(cont,minimoT,maximoT,minimoI,maximoI):
     start_memory = getMemory()
     respuesta=model.req3(cont,minimoT,maximoT,minimoI,maximoI)
 
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+    return respuesta,delta_time, delta_memory
+
+def req4(caracteristica,minimo,maximo,cont):
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+    respuesta=model.req4(caracteristica,minimo,maximo,cont)
     stop_memory = getMemory()
     stop_time = getTime()
     tracemalloc.stop()

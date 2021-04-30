@@ -49,6 +49,7 @@ def printMenu():
     print("3- Caracterizar las reproducciones")
     print("4- Encontrar música para festejar")
     print("5- Encontrar música para estudiar")
+    print("6- Estimar las reproducciones de los géneros musicales")
     print("0-Salir")
     print("*******************************************")
 
@@ -82,42 +83,31 @@ while True:
         caracteristica=str(input("Ingrese una caracteristica: "))
         minimo=input("Ingrese el valor minimo del contenido: ")
         maximo=input("Ingrese el valor maximo del contenido: ")
-        x=om.values(cont[caracteristica],minimo,maximo)
-        i=0
-        new=it.newIterator(x)
-        cantidad=0
-        cantidad2=0
-        lst=lt.newList("SINGLE_LINKED")
-        paaa=lt.newList("SINGLE_LINKED")
-        while it.hasNext(new):
-            l=it.next(new)
-            cantidad2+=lt.size(l)
-            print(cantidad2) #Reproducciones
-            nuevo=it.newIterator(l)
-            while it.hasNext(nuevo):
-                pedazo=it.next(nuevo)
-                ax=mp.get(pedazo,'artist_id')
-                tax=me.getValue(ax)
-                if lt.isPresent(paaa,tax)==0:
-                    lt.addLast(paaa,tax)
-        print(lt.size(paaa)) #Cantidad de artistas unicos
-        print(cantidad2) #Reproducciones se pasa por 12
+        minimo=float(minimo)
+        maximo=float(maximo)
+        respuesta=controller.req1(caracteristica,minimo,maximo,cont)
+        tamano=respuesta[0][0]
+        cantidad=respuesta[0][1]
+        print("El total de artistas unicos son: "+str(cantidad))
+        print("El total de tracks o reproducciones son: "+str(tamano))
+        print("Tiempo [ms]: ", f"{respuesta[1]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{respuesta[2]:.3f}")
     elif int(inputs[0]) ==4:
-        minimoE=input("Ingrese el valor minimo de la caracteristica Energy: ")
-        maximoE=input("Ingrese el valor maximo de la caracteristica Energy: ")
-        minimoD=input("Ingrese el valor minimo de la caracteristica Danceability: ")
-        maximoD=input("Ingrese el valor maximo de la caracteristica Danceability: ")
+        minimoE=float(input("Ingrese el valor minimo de la caracteristica Energy: "))
+        maximoE=float(input("Ingrese el valor maximo de la caracteristica Energy: "))
+        minimoD=float(input("Ingrese el valor minimo de la caracteristica Danceability: "))
+        maximoD=float(input("Ingrese el valor maximo de la caracteristica Danceability: "))
         answers=controller.req2(cont,minimoE,maximoE,minimoD,maximoD)
-        answer=answers[0]
-        cantidad=lt.size(answer)
+        answersi=answers[0]
+        cantidadii=lt.size(answersi)
         pista=lt.newList("ARRAY_LIST")
         print('Energy esta entre '+str(minimoE)+ " y "+str(maximoE))
         print("Danceability esta entre "+str(minimoD)+ " y "+str(maximoD))
-        print("Los track unicos en eventos son: "+str(cantidad))
+        print("Los track unicos en eventos son: "+str(cantidadii))
         x=1
         while x<=5:
-            rand=random.randint(1,cantidad)# Aqui buscamos obtener un numero dentro del rango para poder usar el lt.getElement() de una pos cualquiera para imprimir
-            track=lt.getElement(answer,rand) #Lo mismo que it.next(de un iterador de lista)
+            rand=random.randint(1,cantidadii)# Aqui buscamos obtener un numero dentro del rango para poder usar el lt.getElement() de una pos cualquiera para imprimir
+            track=lt.getElement(answersi,rand) #Lo mismo que it.next(de un iterador de lista)
             id=me.getValue(mp.get(track,'track_id')) #Saco pareja llave-valor del track_id y su valor (track_id respectivo del elemento), para luego sacar su valor(track_id)
             energia=me.getValue(mp.get(track,'energy'))
             danceability=me.getValue(mp.get(track,'danceability'))
@@ -127,13 +117,13 @@ while True:
         print("Tiempo [ms]: ", f"{answers[1]:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{answers[2]:.3f}")
     elif int(inputs[0]) ==5:
-        minimoI=input("Ingrese el valor minimo de la caracteristica instrumentalness: ")
-        maximoI=input("Ingrese el valor maximo de la caracteristica instrumentalness: ")
-        minimoT=input("Ingrese el valor minimo de la caracteristica tempo: ")
-        maximoT=input("Ingrese el valor maximo de la caracteristica tempo: ")
+        minimoI=float(input("Ingrese el valor minimo de la caracteristica instrumentalness: "))
+        maximoI=float(input("Ingrese el valor maximo de la caracteristica instrumentalness: "))
+        minimoT=float(input("Ingrese el valor minimo de la caracteristica tempo: "))
+        maximoT=float(input("Ingrese el valor maximo de la caracteristica tempo: "))
         answersa=controller.req3(cont,minimoI,maximoI,minimoT,maximoT)
         asnwer=answersa[0]
-        cantidad=lt.size(answer)
+        cantidad=lt.size(asnwer)
         pista=lt.newList("ARRAY_LIST")
         #pes=lt.getElement(answer,1) #Es lo mismo que it.next(f)
         print('Instrumentalness esta entre '+str(minimoI)+ " y "+str(maximoI))
@@ -142,7 +132,7 @@ while True:
         x=1
         while x<=5:
             rand=random.randint(1,cantidad)
-            track=lt.getElement(answer,rand) #Lo mismo que it.next(de un iterador de lista)
+            track=lt.getElement(asnwer,rand) #Lo mismo que it.next(de un iterador de lista)
             id=me.getValue(mp.get(track,'track_id')) #Saco pareja llave-valor del track_id y su valor (track_id respectivo del elemento), para luego sacar su valor(track_id)
             instrumental=me.getValue(mp.get(track,'instrumentalness'))
             tempo=me.getValue(mp.get(track,'tempo'))
@@ -151,6 +141,82 @@ while True:
             x+=1
         print("Tiempo [ms]: ", f"{answersa[1]:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{answersa[2]:.3f}")
+    elif int(inputs[0]) ==6:
+        generos=['POP','REGGAE','DOWN-TEMPO','CHILL-OUT','HIP-HOP','JAZZ AND FUNK','R&B','ROCK','METAL']
+        x=input("Para buscar algun genero conocido (F) o desea crear un nuevo genero (V): ")
+        if x=="F":
+            n=False
+            lista=lt.newList()
+            tamano=0
+            print("*******************************************")
+            print("Recuerde poner los generos que se desea buscar en mayuscula...")
+            while n==False:
+                print("*******************************************")
+                print("Estos son los tipos de generos que puede buscar: ")
+                print(generos)
+                print("*******************************************")
+                y=input("Ponga X para decir que genero desea buscar, de lo contrario marque E: ")
+                if y=="X":
+                    genero=input("Ingrese el genero que quiere buscar: ").upper()
+                    if genero not in generos:
+                        print("*******************************************")
+                        print("Ingrese un genero valido que este dentro de la lista porfavor...")
+                    else:
+                        tamano+=1
+                        lt.addLast(lista,genero)
+                else: 
+                    n=True
+            q=0
+            fua=it.newIterator(lista)
+            while it.hasNext(fua):
+                genero=it.next(fua)
+                if genero=="POP":
+                    minimo=100.0
+                    maximo=130.0
+                elif genero=='REGGAE':
+                    minimo=60.0
+                    maximo=90.0
+                elif genero=='DOWN-TEMPO':###
+                    minimo=70.0
+                    maximo=100.0
+                elif genero=='CHILL-OUT':#
+                    minimo=90.0
+                    maximo=120.0
+                elif genero=='HIP-HOP':#
+                    minimo=85.0
+                    maximo=115.0
+                elif genero=='JAZZ AND FUNK':
+                    minimo=120.0
+                    maximo=125.0
+                elif genero=='R&B':
+                    minimo=60.0
+                    maximo=80.0
+                elif genero=="ROCK":
+                    minimo=110.0
+                    maximo=140.0
+                else:
+                    minimo=100.0
+                    maximo=160.0
+                pra=controller.req4('tempo',minimo,maximo,cont)
+                artistas=pra[0][0]
+                reproducciones=pra[0][1]
+                lista=pra[0][2]
+                x=1
+                cantidad=lt.size(lista)
+                print("Para el genero: "+str(genero)+ ' se tiene que hay ' + str(artistas)+ ' artistas y '+ str(reproducciones)+' reproducciones')
+                print("donde el tempo minimo es "+str(minimo)+ " y el maximo es "+ str(maximo))
+                while x<=10:
+                    rand=random.randint(1,cantidad) #
+                    track=lt.getElement(lista,rand) #Lo mismo que it.next(de un iterador de lista)
+                    id=me.getValue(mp.get(track,'track_id')) #Saco pareja llave-valor del track_id y su valor (track_id respectivo del elemento), para luego sacar su valor(track_id)
+                    print("*******************************************")
+                    print('Arist '+str(x)+':'+str(id))
+                    x+=1
+        else:
+            nombre=input("Ingrese el nuevo nombre del genero: ")
+            minimo=input("Ingrese el valor minimo del tempo: ")
+            maximo=input("Ingrese el valor maximo del tempo: ")
+        pass
     else:
         sys.exit(0)
 sys.exit(0)
