@@ -141,7 +141,7 @@ while True:
               "Memoria [kB]: ", f"{answersa[2]:.3f}")
     elif int(inputs[0]) ==6:
         generos=['POP','REGGAE','DOWN-TEMPO','CHILL-OUT','HIP-HOP','JAZZ AND FUNK','R&B','ROCK','METAL']
-        x=input("Para buscar algun genero conocido (F) o desea crear un nuevo genero (V): ")
+        x=input("Para buscar algun genero conocido (F) o desea crear un nuevo genero (V): ").upper()
         if x=="F":
             n=False
             lista=lt.newList()
