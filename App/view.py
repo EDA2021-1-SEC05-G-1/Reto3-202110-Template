@@ -81,15 +81,13 @@ while True:
               "Memoria [kB]: ", f"{answer[2]:.3f}")
     elif int(inputs[0]) ==3:
         caracteristica=str(input("Ingrese una caracteristica: "))
-        minimo=input("Ingrese el valor minimo del contenido: ")
-        maximo=input("Ingrese el valor maximo del contenido: ")
-        minimo=float(minimo)
-        maximo=float(maximo)
+        minimo=float(input("Ingrese el valor minimo del contenido: "))
+        maximo=float(input("Ingrese el valor maximo del contenido: "))
         respuesta=controller.req1(caracteristica,minimo,maximo,cont)
         tamano=respuesta[0][0]
         cantidad=respuesta[0][1]
-        print("El total de artistas unicos son: "+str(cantidad))
-        print("El total de tracks o reproducciones son: "+str(tamano))
+        print("El total de artistas unicos son: "+str(tamano))
+        print("El total de tracks o reproducciones son: "+str(cantidad))
         print("Tiempo [ms]: ", f"{respuesta[1]:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{respuesta[2]:.3f}")
     elif int(inputs[0]) ==4:
@@ -212,10 +210,29 @@ while True:
                     print("*******************************************")
                     print('Arist '+str(x)+':'+str(id))
                     x+=1
+            print("Tiempo [ms]: ", f"{pra[1]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{pra[2]:.3f}")
         else:
             nombre=input("Ingrese el nuevo nombre del genero: ")
-            minimo=input("Ingrese el valor minimo del tempo: ")
-            maximo=input("Ingrese el valor maximo del tempo: ")
+            minimo=float(input("Ingrese el valor minimo del tempo: "))
+            maximo=float(input("Ingrese el valor maximo del tempo: "))
+            pra=controller.req4('tempo',minimo,maximo,cont)
+            artistas=pra[0][0]
+            reproducciones=pra[0][1]
+            lista=pra[0][2]
+            x=1
+            cantidad=lt.size(lista)
+            print("*******************************************")
+            print("Para el nuevo genero: "+str(nombre)+ ' se tiene que hay ' + str(artistas)+ ' artistas y '+ str(reproducciones)+' reproducciones')
+            print("donde el tempo minimo es "+str(minimo)+ " y el maximo es "+ str(maximo))
+            while x<=10:
+                rand=random.randint(1,cantidad) #
+                track=lt.getElement(lista,rand) #Lo mismo que it.next(de un iterador de lista)
+                id=me.getValue(mp.get(track,'track_id'))
+                print('Arist '+str(x)+':'+str(id))
+                x+=1
+            print("Tiempo [ms]: ", f"{pra[1]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{pra[2]:.3f}")
         pass
     else:
         sys.exit(0)

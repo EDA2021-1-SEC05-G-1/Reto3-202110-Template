@@ -54,7 +54,7 @@ def loadData(analyzer, contexto,user):
     input_file = csv.DictReader(open(contexto, encoding="utf-8"),delimiter=",")
     #user= cf.data_dir + user
     #input_file2 = csv.DictReader(open(user, encoding="utf-8"),delimiter=",")
-    #lst=[]
+    lst=[]
     #for hashtag in input_file2:
     #    lst+=[hashtag["hashtag"]]
     #i=0"instrumentalness","liveness","speechiness","danceability","valence","loudness","tempo","acousticness",
@@ -65,6 +65,7 @@ def loadData(analyzer, contexto,user):
         track['tempo']=float(track['tempo'])#Se habia hecho primero un orden de str(eterolexico?) Es necesario tenerlos en int
         track['energy']=float(track['energy'])
         track['liveness']=float(track['liveness'])
+        track['instrumentalness']=float(track['instrumentalness'])
         track['speechiness']=float(track['speechiness'])
         track['danceability']=float(track['danceability'])
         track['valence']=float(track['valence'])
@@ -74,10 +75,11 @@ def loadData(analyzer, contexto,user):
         track['mode']=float(track['mode'])
         track['key']=float(track['key'])
         track['id']=int(track['id'])
+        #for x in 
         model.addTrack(analyzer, track)
-        #x+=1
-        #if x==1000:
-        #    break
+        x+=1
+        if x==1000:
+            break
         #i+=1
     
     stop_memory = getMemory()

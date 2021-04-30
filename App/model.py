@@ -136,7 +136,6 @@ def req1(caracteristica,minimo,maximo,cont):
     while it.hasNext(new):
         l=it.next(new)
         cantidad2+=lt.size(l)
-        print(cantidad2)
         #print(cantidad2) #Reproducciones
         nuevo=it.newIterator(l)
         while it.hasNext(nuevo):
