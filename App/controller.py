@@ -77,9 +77,9 @@ def loadData(analyzer, contexto,user):
         track['id']=int(track['id'])
         #for x in 
         model.addTrack(analyzer, track)
-        #x+=1
-        #if x==1000: #Se usaba para mirar que cantidad de datos mirar
-         #   break
+        x+=1
+        if x==1000: #Se usaba para mirar que cantidad de datos mirar
+            break
         #i+=1
     
     stop_memory = getMemory()

@@ -153,7 +153,7 @@ while True:
                 print("Estos son los tipos de generos que puede buscar: ")
                 print(generos)
                 print("*******************************************")
-                y=input("Ponga X para decir que genero desea buscar, de lo contrario marque E: ")
+                y=input("Ponga X para decir que genero desea buscar, de lo contrario marque E: ").upper()
                 if y=="X":
                     genero=input("Ingrese el genero que quiere buscar: ").upper()
                     if genero not in generos:
