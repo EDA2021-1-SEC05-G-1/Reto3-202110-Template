@@ -21,6 +21,7 @@
  """
 
 import config as cf
+import datetime
 import sys
 import controller
 from DISClib.ADT import list as lt
@@ -31,7 +32,8 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.DataStructures import listiterator as it
 assert cf
 import random
-
+from App import model
+import csv
 
 """
 La vista se encarga de la interacción con el usuario
@@ -50,11 +52,13 @@ def printMenu():
     print("4- Encontrar música para festejar")
     print("5- Encontrar música para estudiar")
     print("6- Estimar las reproducciones de los géneros musicales")
+    print("7- Indicar el género musical más escuchado en un tiempo")
     print("0-Salir")
     print("*******************************************")
 
 contexto= "context_content_features-small.csv"
 user="user_track_hashtag_timestamp-small.csv"
+sentiment="sentiment_values.csv"
 """
 Menu principal
 """
@@ -69,23 +73,21 @@ while True:
         print("Se creo el catalogo sin información correctamente.")
     elif int(inputs[0]) == 2:
         print("Cargando información de los archivos ....")
-        answer=controller.loadData(cont, contexto,user)
-        cont=answer[0]
+        answer=controller.loadData(cont, contexto,user,sentiment)
+        cont=answer[0] #Se saca el catalogo de la tupla de respuesta
 
         print("Hay "+str(lt.size(cont["tracks"]))+" tracks cargados.")
         print("Hay "+str(om.size(cont['artist_id']))+" artistas unicos cargados.")
         print("Hay "+str(om.size(cont['created_at']))+" eventos cargados.")
-        print('Hay '+str(om.size(cont['instrumentalness']))+" HASHTAG")
-    
-        print("Tiempo [ms]: ", f"{answer[1]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{answer[2]:.3f}")
+        print("Tiempo [ms]: ", f"{answer[1]:.3f}", "  ||  ", #Imprime el tiempo
+              "Memoria [kB]: ", f"{answer[2]:.3f}") #Imprime la memoria
     elif int(inputs[0]) ==3:
         caracteristica=str(input("Ingrese una caracteristica: "))
         minimo=float(input("Ingrese el valor minimo del contenido: "))
         maximo=float(input("Ingrese el valor maximo del contenido: "))
         respuesta=controller.req1(caracteristica,minimo,maximo,cont)
-        tamano=respuesta[0][0]
-        cantidad=respuesta[0][1]
+        tamano=respuesta[0][0] #Se saca el total de los artistas unicos desde el req1 (sale de tupla de la respuesta)
+        cantidad=respuesta[0][1] #Se saca el total de tracks no unicos (sale de tupla de la respuesta)
         print("El total de artistas unicos son: "+str(tamano))
         print("El total de tracks o reproducciones son: "+str(cantidad))
         print("Tiempo [ms]: ", f"{respuesta[1]:.3f}", "  ||  ",
@@ -96,18 +98,18 @@ while True:
         minimoD=float(input("Ingrese el valor minimo de la caracteristica Danceability: "))
         maximoD=float(input("Ingrese el valor maximo de la caracteristica Danceability: "))
         answers=controller.req2(cont,minimoE,maximoE,minimoD,maximoD)
-        answersi=answers[0]
-        cantidadii=lt.size(answersi)
-        pista=lt.newList("ARRAY_LIST")
+        answersi=answers[0] #Sale la lista de respuesta 
+        cantidadii=lt.size(answersi) #Se saca el tamaño de la lista de la respuesta
+        pista=lt.newList("ARRAY_LIST")#Crea una nueva lista para iterar, con el fin de imprimir 5 tracks random
         print('Energy esta entre '+str(minimoE)+ " y "+str(maximoE))
         print("Danceability esta entre "+str(minimoD)+ " y "+str(maximoD))
         print("Los track unicos en eventos son: "+str(cantidadii))
         x=1
         while x<=5:
             rand=random.randint(1,cantidadii)# Aqui buscamos obtener un numero dentro del rango para poder usar el lt.getElement() de una pos cualquiera para imprimir
-            track=lt.getElement(answersi,rand) #Lo mismo que it.next(de un iterador de lista)
+            track=lt.getElement(answersi,rand) #Lo mismo que it.next(de un iterador de lista) #Sacamos un pedazo de la lista random
             id=me.getValue(mp.get(track,'track_id')) #Saco pareja llave-valor del track_id y su valor (track_id respectivo del elemento), para luego sacar su valor(track_id)
-            energia=me.getValue(mp.get(track,'energy'))
+            energia=me.getValue(mp.get(track,'energy'))#Saco el valor de la pareja llave-valor del energy 
             danceability=me.getValue(mp.get(track,'danceability'))
             print("*******************************************")
             print('Track '+str(x)+':'+str(id)+ " with energy of "+str(energia)+" and danceability of "+str(danceability))
@@ -165,6 +167,9 @@ while True:
                 else: 
                     n=True
             q=0
+            sumat=0
+            sumam=0
+            total=0
             fua=it.newIterator(lista)
             while it.hasNext(fua):
                 genero=it.next(fua)
@@ -201,8 +206,13 @@ while True:
                 lista=pra[0][2]
                 x=1
                 cantidad=lt.size(lista)
+                total+=int(reproducciones)
+                sumat+=float(pra[1])
+                sumam+=float(pra[2])
+                print("*******************************************")
+                print("*******************************************")
                 print("Para el genero: "+str(genero)+ ' se tiene que hay ' + str(artistas)+ ' artistas y '+ str(reproducciones)+' reproducciones')
-                print("donde el tempo minimo es "+str(minimo)+ " y el maximo es "+ str(maximo))
+                print("Donde el tempo minimo es "+str(minimo)+ " y el maximo es "+ str(maximo))
                 while x<=10:
                     rand=random.randint(1,cantidad) #
                     track=lt.getElement(lista,rand) #Lo mismo que it.next(de un iterador de lista)
@@ -210,8 +220,9 @@ while True:
                     print("*******************************************")
                     print('Arist '+str(x)+':'+str(id))
                     x+=1
-            print("Tiempo [ms]: ", f"{pra[1]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{pra[2]:.3f}")
+            print("En total se tiene un total de reproducciones de:  "+str(total))
+            print("Tiempo [ms]: ", f"{sumat:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{sumam:.3f}")
         else:
             nombre=input("Ingrese el nuevo nombre del genero: ")
             minimo=float(input("Ingrese el valor minimo del tempo: "))
@@ -223,8 +234,9 @@ while True:
             x=1
             cantidad=lt.size(lista)
             print("*******************************************")
+            print("*******************************************")
             print("Para el nuevo genero: "+str(nombre)+ ' se tiene que hay ' + str(artistas)+ ' artistas y '+ str(reproducciones)+' reproducciones')
-            print("donde el tempo minimo es "+str(minimo)+ " y el maximo es "+ str(maximo))
+            print("Donde el tempo minimo es "+str(minimo)+ " y el maximo es "+ str(maximo))
             while x<=10:
                 rand=random.randint(1,cantidad) #
                 track=lt.getElement(lista,rand) #Lo mismo que it.next(de un iterador de lista)
@@ -233,54 +245,162 @@ while True:
                 x+=1
             print("Tiempo [ms]: ", f"{pra[1]:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{pra[2]:.3f}")
-        pass
+    elif int(inputs[0]) ==7:
+        print('Ingrese los datos de las horas en formato de 1-24 horas dependiendo del rango que desea')
+        miniH=int(input("Ingrese el(las) hora(s) minima(s) a trabajar: "))
+        miniM=int(input("Ingrese el(los) minuto(s) minimo(s) a trabajar: "))
+        miniS=int(input("Ingrese el(los) segundo(s) minimo(s) a trabajar: "))
+        maxH=int(input("Ingrese el(las) hora(s) maxima(s) a trabajar: "))
+        maxM=int(input("Ingrese el(los) minuto(s) maximo(s) a trabajar: "))
+        maxS=int(input("Ingrese el(los) segundo(s) maximo(s) a trabajar: "))
+        filtrada1=controller.total(cont,miniH,miniM,miniS,maxH,maxM,maxS)
+        nuevo_cat=controller.init2()
+        newsaw=it.newIterator(filtrada1)
+        sentimen = cf.data_dir + sentiment
+        input_file3 = csv.DictReader(open(sentimen, encoding="utf-8"),delimiter=",")
+        user= cf.data_dir + user #
+        input_file2 = csv.DictReader(open(user, encoding="utf-8"),delimiter=",")
+        lst=lt.newList()
+        for hashtag in input_file2:
+            lt.addLast(lst,hashtag)
+        new=it.newIterator(lst)# Ponerlo en controller
+        sss=lt.newList()#
+        for senti in input_file3:
+            lt.addLast(sss,senti)
+        itet=it.newIterator(sss)# Ponerlo en otro controllorer junto con el sentimen y el input_file3 csv.DictReader()
+        while it.hasNext(newsaw):
+            l=it.next(newsaw)
+            #cantidad2+=lt.size(l)
+            #print(cantidad2) #Reproducciones
+            nuevo=it.newIterator(l)
+            while it.hasNext(nuevo):
+                pedazo=it.next(nuevo) #Mira cada track cumplido con el primer filtro
+                #ax=mp.get(pedazo,'hashtag')
+                ex=mp.get(pedazo,'tempo')
+                ix=mp.get(pedazo,'horas')
+                ox=mp.get(pedazo,'track_id')
+                ux=mp.get(pedazo,'user_id')
+                ax=mp.get(pedazo,'artist_id')
+                #tax=me.getValue(ax)
+                tex=me.getValue(ex)
+                tix=me.getValue(ix)
+                tox=me.getValue(ox)
+                tux=me.getValue(ux)
+                tax=me.getValue(ax)
+                cantidad=0
+                vader_avg=0
+                while it.hasNext(new):
+                    hashtag=it.next(new) #Buscar el hashtag aqui y su valor vader tambien #Mira cada hashtag 
+                    if hashtag['track_id']==tox:
+                        hasht=hashtag['hashtag'].lower() #Se busca los que sean iguales al track_id (todos los hashtag del track_id respectivo)
+                        while it.hasNext(itet):
+                            senti=it.next(itet) #Se busca basicamente que tenga un valor_vader
+                            if senti['hashtag'].lower()==hasht:
+                                if senti['vader_avg']!='' and senti['vader_avg']!=None:
+                                    vader_avg+=float(senti['vader_avg'])
+                                    cantidad+=1
+                                break
+                        itet=it.newIterator(sss)
+                new=it.newIterator(lst)
+                nuevodic={}
+                nuevodic['tempo']=int(tex)
+                nuevodic['horas']=tix
+                nuevodic['track_id']=tox
+                nuevodic['artist_id']=tax
+                nuevodic['cantidad']=cantidad
+                nuevodic['user_id']=tux
+                if nuevodic['cantidad']!=0: 
+                    vader_avg=vader_avg/cantidad
+                    nuevodic['vader_avg']=vader_avg
+                    model.addTrack(nuevo_cat,nuevodic)
+        generos=lt.newList()
+        lista=['POP','REGGAE','DOWN-TEMPO','CHILL-OUT','HIP-HOP','JAZZ AND FUNK','R&B','ROCK','METAL']
+        for gen in lista:
+            lt.addLast(generos,gen)
+        fua=it.newIterator(generos)
+        top=0
+        nombretop=""
+        listatop=None
+        cantidadT=0
+        while it.hasNext(fua):
+            genero=it.next(fua)
+            if genero=="POP":
+                minimo=100.0
+                maximo=130.0
+            elif genero=='REGGAE':
+                minimo=60.0
+                maximo=90.0
+            elif genero=='DOWN-TEMPO':###
+                minimo=70.0
+                maximo=100.0
+            elif genero=='CHILL-OUT':#
+                minimo=90.0
+                maximo=120.0
+            elif genero=='HIP-HOP':#
+                minimo=85.0
+                maximo=115.0
+            elif genero=='JAZZ AND FUNK':
+                minimo=120.0
+                maximo=125.0
+            elif genero=='R&B':
+                minimo=60.0
+                maximo=80.0
+            elif genero=="ROCK":
+                minimo=110.0
+                maximo=140.0
+            else:
+                minimo=100.0
+                maximo=160.0
+            pra=controller.req4('tempo',minimo,maximo,nuevo_cat)
+            artistas=pra[0][0]
+            reproducciones=pra[0][1]
+            lista=pra[0][2]
+            cantidadT+=reproducciones
+            if top<reproducciones:
+                top=reproducciones
+                nombretop=genero
+                listatop=lista
+            x=1
+            cantidad=lt.size(lista)
+            print("*******************************************")
+            print("*******************************************")
+            print("Para el genero: "+str(genero)+ ' se tiene que hay ' + str(artistas)+ ' artistas y '+ str(reproducciones)+' reproducciones')
+            print("Donde el tempo minimo es "+str(minimo)+ " y el maximo es "+ str(maximo))
+        print("En total se tienen "+ str(cantidadT) + " reproducciones o tracks en la hora "+ str(miniH)+":"+str(miniM)+":"+str(miniS)+" y la hora "+str(maxH)+":"+str(maxM)+":"+str(maxS))
+        print("=====================================")
+        print("*************************************")
+        newisi=it.newIterator(listatop)
+        lst=lt.newList("SINGLE_LINKED")
+        paaa=lt.newList("SINGLE_LINKED")
+        while it.hasNext(newisi):
+            pedazo=it.next(newisi)#Esto devuelve un mapa de la lista iterando (mapa de la lista(cada elemento))
+            nex=mp.get(pedazo,'track_id')#Devuelve la llave danceability y el valor respectivo del mapa en forma de diccionario
+            tax=me.getValue(ax)#Devuelve el valor de danceability del track sacado en el mapa de it.next(video)
+            fex=me.getValue(nex)
+            if lt.isPresent(lst,fex)==0:
+                lt.addLast(paaa,pedazo)
+                lt.addLast(lst,fex)
+        totalu=lt.size(paaa)
+        print("El genero con mayor reproducciones (TOP) es: "+str(genero) +" con "+str(totalu)+" de tracks unicos")
+        x=1
+        print("*******************************************")
+        print("*******************************************")
+        print("Estos son algunos de los tracks del genero: ")
+        vistos=lt.newList()
+        n=1
+        while n<=10:
+            rand=random.randint(1,totalu) #
+            track=lt.getElement(paaa,rand) #Lo mismo que it.next(de un iterador de lista)
+            id=me.getValue(mp.get(track,'track_id'))
+            hashte=me.getValue(mp.get(track,'cantidad'))
+            vader=me.getValue(mp.get(track,'vader_avg'))
+            if lt.isPresent(vistos,id)==0:
+                print('Track '+str(x)+':'+str(id) +" con "+str(hashte)+" hashtags y con un vader_avg de "+str(vader_avg))
+                lt.addLast(vistos,id)
+                x+=1
+            n+=1 
     else:
         sys.exit(0)
 sys.exit(0)
 
-       # for f in range(0,lt.size(x)):#+1
-        #    a=lt.getElement(x,f)
-         #   cantidad+=lt.size(a)
-          #  for n in range(0,lt.size(a)+1):#+1 para que se recorra todo
-           #     f=lt.getElement(a,n)
-            #    n=mp.get(f,'user_id')
-             #   t=me.getValue(n)
-              #  if lt.isPresent(lst,t)==0:
-               #     lt.addLast(lst,t)
-       # print(lt.size(lst))
-        #print(cantidad)
-        #Hacer conteo y un cmpfunction con el tadlist
-       # tad=lt.newList('ARRAY_LIST')
-        #lista_n=[]
-        #i=1
-        #while i<lt.size(x):
-         #   if lt.getElement(x,i)
-        #tad=lt.newList()
-        #cont=mp.get()
-       # nueva=lt.newList() #Nueva lista para empezar a meter para no repetir artistas
-      #  validacion=om.values(cont[caracteristica],minimo,maximo)#Hacer un filtrado de la caracteristica desde lo que quiere el usuario
-       # for x in range(1+lt.size(validacion)):
-        #    parte=lt.getElement(validacion,x)
-         #   peque=me.getValue(cont['user_id'])
-          #  artista=mp.get(peque,'user_id')
-           # if lt.isPresent(nueva,artista)==0:
-            #    lt.addLast(artista)
-      #  print(lt.size(validacion))
-       # print(lt.size(nueva))
-       #Para este requerimiento la idea era que a partir del mapa de los artistas de las llaves,
-       #Contar cuantas veces tiene la caracteristica deseada en sus tracks y meterse a sus valores
-       #Mirando que cumpla cada track con la caracteristica para poder sacar ese track en otro ordered map
-       #Basicamente crear otro om para poder luego hacer .keys() y lt.size()
-        #Otra solución propuesta fue que a partir del catalogo, crear un nuevo pedazo para el requerimiento en el mismo
-        #Con el fin de que a partir de un catalogo base mirar que no se repitan losa artistas para ir guardando los datos,
-        #Sin embargo, no entendimos ni logramos correctamente como sacar los datos del catalogo
-        #Ahora bien, logramos llegar a tener un catalogo en base a las caracteristicas del contexto en el que se carga correctamente cada dato
-  #  variable=input('Va a ingresar un genero musical unico?: ')
-  #  diccionario={'regge':(60,90}....}
-  #  if varibale=="Si":
-  #      min=input("minimo: ")
-   #     max=input("maximo: ")
-     #   nombre=input("Nombre: ")
-    #    x=om.values(cont['tempo'],min,max)
-      #  diccionario[nombre]=x
     

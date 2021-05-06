@@ -26,7 +26,14 @@ import datetime
 import csv
 import time
 import tracemalloc
-
+from DISClib.ADT import list as lt
+from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
+from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.ADT import orderedmap as om
+assert cf
+from DISClib.DataStructures import orderedmapstructure as mo
+from DISClib.DataStructures import listiterator as it
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -42,7 +49,7 @@ def init():
     return analyzer
 
 # Funciones para la carga de datos
-def loadData(analyzer, contexto,user):
+def loadData(analyzer, contexto,user,sentiment):
     """
     Carga los datos de los archivos CSV en el modelo
     """
@@ -50,31 +57,53 @@ def loadData(analyzer, contexto,user):
     tracemalloc.start()
     start_time = getTime()
     start_memory = getMemory()
+    #sentimen = cf.data_dir + sentiment
+    #input_file3 = csv.DictReader(open(sentimen, encoding="utf-8"),delimiter=",")
     contexto = cf.data_dir + contexto
     input_file = csv.DictReader(open(contexto, encoding="utf-8"),delimiter=",")
     #user= cf.data_dir + user
     #input_file2 = csv.DictReader(open(user, encoding="utf-8"),delimiter=",")
-    lst=[]
+    #x=0
+    #lst=lt.newList()
+    #sss=lt.newList()
+   # for senti in input_file3:
+    #    lt.addLast(sss,senti)
+    #itet=it.newIterator(sss)
+    #x=0
+    #lst=lt.newList()
     #for hashtag in input_file2:
-    #    lst+=[hashtag["hashtag"]]
+    #    lt.addLast(lst,hashtag)
+    #new=it.newIterator(lst)
+        #x+=1
+        #if x==5: 
+            #break#Se usaba para mirar que cantidad de datos mirar
     #i=0"instrumentalness","liveness","speechiness","danceability","valence","loudness","tempo","acousticness",
     # "energy","mode","key","artist_id","tweet_lang","track_id","created_at","lang","time_zone","user_id","id"
     x=0 
     for track in input_file:
-       # track["hashtag"]=lst[i] #No es lo mismo comparar str que con numeros
-        track['tempo']=float(track['tempo'])#Se habia hecho primero un orden de str(eterolexico?) Es necesario tenerlos en int
+        #No es lo mismo comparar str que con numeros
+        track['tempo']=float(track['tempo'])#Se habia hecho primero un orden de str(eterolexico?(que se comparan str en om.values())) Es necesario tenerlos en int
         track['energy']=float(track['energy'])
         track['liveness']=float(track['liveness'])
         track['instrumentalness']=float(track['instrumentalness'])
+        hora=track['created_at'][11:19]
+        t=datetime.time.fromisoformat(hora)#Fromisoformat crea un formato iso del datetime() Formato de libreria para poder hacer operaciones (su inversa es isoFormat (ponerlo en str))
+        track['horas']=t
+        track['created_at']=str(track['created_at'])
         track['speechiness']=float(track['speechiness'])
         track['danceability']=float(track['danceability'])
         track['valence']=float(track['valence'])
+        track['user_id']=int(track['user_id'])
         track['loudness']=float(track['loudness'])
         track['acousticness']=float(track['acousticness'])
         track['energy']=float(track['energy'])
         track['mode']=float(track['mode'])
         track['key']=float(track['key'])
         track['id']=int(track['id'])
+        #track['hashtag']=""
+        #track['hashtag']=lt.getElement(lst,x+1)
+        #if track['hashtag']==None:
+            #track['hashtag']=""
         #for x in 
         model.addTrack(analyzer, track)
         x+=1
@@ -146,7 +175,65 @@ def req4(caracteristica,minimo,maximo,cont):
     delta_time = stop_time - start_time
     delta_memory = deltaMemory(start_memory, stop_memory)
     return respuesta,delta_time, delta_memory
-
+# =======================Req 5===========
+def total(cont,miniH,miniM,miniS,maxH,maxM,maxS):
+    return model.total(cont,miniH,miniM,miniS,maxH,maxM,maxS)
+def init2():
+    """
+    Llama la funcion de inicializacion  del modelo.
+    """
+    # catalog es utilizado para interactuar con el modelo
+    analyzer = model.newAnalyzer2()
+    return analyzer
+def loadData2(analyzer, contexto,user,sentiment):
+    """
+    Carga los datos de los archivos CSV en el modelo
+    """
+    sentimen = cf.data_dir + sentiment
+    input_file3 = csv.DictReader(open(sentimen, encoding="utf-8"),delimiter=",")
+    contexto = cf.data_dir + contexto
+    #input_file = csv.DictReader(open(contexto, encoding="utf-8"),delimiter=",")
+    #user= cf.data_dir + user
+    input_file2 = csv.DictReader(open(user, encoding="utf-8"),delimiter=",")
+    #x=0
+    lst=lt.newList()
+    sss=lt.newList()
+    for senti in input_file3:
+        lt.addLast(sss,senti)
+    itet=it.newIterator(sss)
+    #x=0
+    for hashtag in input_file2:
+        lt.addLast(lst,hashtag['hashtag'])
+     #   x+=1
+      #  if x==5: 
+       #     break#Se usaba para mirar que cantidad de datos mirar
+    #i=0"instrumentalness","liveness","speechiness","danceability","valence","loudness","tempo","acousticness",
+    # "energy","mode","key","artist_id","tweet_lang","track_id","created_at","lang","time_zone","user_id","id"
+    x=0 
+    for track in input_file:
+        #No es lo mismo comparar str que con numeros
+        track['tempo']=float(track['tempo'])#Se habia hecho primero un orden de str(eterolexico?(que se comparan str en om.values())) Es necesario tenerlos en int
+        hora=track['created_at'][11:19]
+        t=datetime.time.fromisoformat(hora)#Fromisoformat crea un formato iso del datetime() Formato de libreria para poder hacer operaciones (su inversa es isoFormat (ponerlo en str))
+        track['horas']=t
+        track['created_at']=str(track['created_at'])
+        track['user_id']=int(track['user_id'])
+        track['id']=int(track['id'])
+        while it.hasNext(itet):
+            sent=it.next(itet)
+            if sent['hashtag']==lt.getElement(lst,x+1):
+                track['vader_avg']=sent['vader_avg']
+                track["hashtag"]=lt.getElement(lst,x+1)
+                model.addTrack(analyzer,track)
+                break
+        itet=it.newIterator(sss)
+        #for x in 
+        #model.addTrack(analyzer, track)
+        x+=1
+        if x==100: #Se usaba para mirar que cantidad de datos mirar
+            break
+        #i+=1
+    return analyzer
 # ======================================
 # Funciones para medir tiempo y memoria
 # ======================================

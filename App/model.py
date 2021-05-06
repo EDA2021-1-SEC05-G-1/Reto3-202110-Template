@@ -59,8 +59,10 @@ def newAnalyzer():
                 'tempo':None,
                 'acousticness':None,
                 'artist_id':None,
-                'created_at':None
+                'created_at':None,
+                'horas':None
                 #'hashtag':None
+                #'cantidad_hashtag':None
                 }
     analyzer['tracks'] = lt.newList('SINGLE_LINKED', compareIds)
     for parte in analyzer:
@@ -92,28 +94,6 @@ def updatetrack(map,track,caracteristica,catalogo):
     om.put(map, data, lst)
     return map
 def newDataEntry(catalogo,track,caracteristica):
-    #if caracteristica=="instrumentalness":
-   #     entrada=mp.newMap(numelements=10,maptype='PROBING',loadfactor=0.5)
-  #  elif caracteristica =='speechiness':
- #       entrada=mp.newMap(numelements=2430,maptype='PROBING',loadfactor=0.5)
-#    elif caracteristica=='liveness':
-    #    entrada=mp.newMap(numelements=3290,maptype='PROBING',loadfactor=0.5)
-   # elif caracteristica=='energy':
-  #      entrada=mp.newMap(numelements=2270,maptype='PROBING',loadfactor=0.5)
- #   elif caracteristica=='danceability':
-#        entrada=mp.newMap(numelements=1860,maptype='PROBING',loadfactor=0.5)
-    #elif caracteristica=='valence':
-   #     entrada=mp.newMap(numelements=2950,maptype='PROBING',loadfactor=0.5)
-  #  elif caracteristica=='tempo':
- #       entrada=mp.newMap(numelements=47170,maptype='PROBING',loadfactor=0.5)
-#    elif caracteristica=='acousticness':
-    #    entrada=mp.newMap(numelements=8910,maptype='PROBING',loadfactor=0.5)
-   # elif caracteristica=='artist_id':
-     #   entrada=mp.newMap(numelements=20830,maptype='PROBING',loadfactor=0.5)
-    #elif caracteristica=='created_at':
-    #    entrada=mp.newMap(numelements=126000,maptype='PROBING',loadfactor=0.5)
-    #elif caracteristica=='hashtag':
-        #entrada=mp.newMap(numelements=3390,maptype='PROBING',loadfactor=0.5)
     entrada = mp.newMap(numelements=10,maptype='PROBING',loadfactor=0.5)
     for caracteristica in catalogo:
         if caracteristica!='tracks':
@@ -240,6 +220,34 @@ def req4(caracteristica,minimo,maximo,cont):
     tamano=lt.size(paaa)
     respuesta=(tamano,cantidad2,lst)
     return respuesta
+# ==============req 5 =========
+def total(cont,miniH,miniM,miniS,maxH,maxM,maxS):
+    mini=datetime.time(miniH,miniM,miniS)
+    maxi=datetime.time(maxH,maxM,maxS)
+    filtrada=om.values(cont['horas'],mini,maxi)
+    return filtrada
+def newAnalyzer2():
+    """ Inicializa el analizador
+
+    Crea una lista vacia para guardar todos los tracks
+    Se crean indices (Maps) por los siguientes criterios:
+    -Fechas
+
+    Retorna el analizador inicializado.
+    """"instrumentalness","liveness","speechiness","danceability","valence"
+    analyzer = {'tracks': None,
+                'tempo':None,
+                'artist_id':None,
+                'track_id':None,
+                'cantidad':None,
+                'vader_avg':None #Para poder usarlos, necesitamos tenerlos como arboles para que se identifiquen (aparezcan en los tracks)
+                }
+    analyzer['tracks'] = lt.newList('SINGLE_LINKED', compareIds)
+    for parte in analyzer:
+        if parte!='tracks':
+            analyzer[parte]=om.newMap(omaptype='RBT',
+                                      comparefunction=compareTracks)
+    return analyzer
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
