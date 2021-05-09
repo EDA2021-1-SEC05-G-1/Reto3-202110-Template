@@ -209,7 +209,18 @@ def req4(caracteristica,minimo,maximo,cont):
     return respuesta,delta_time, delta_memory
 # =======================Req 5===========
 def total(cont,miniH,miniM,miniS,maxH,maxM,maxS):
-    return model.total(cont,miniH,miniM,miniS,maxH,maxM,maxS)
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
+    respuesta=model.total(cont,miniH,miniM,miniS,maxH,maxM,maxS)
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+    return respuesta,delta_time, delta_memory
 def init2():
     """
     Llama la funcion de inicializacion  del modelo.
@@ -218,9 +229,30 @@ def init2():
     analyzer = model.newAnalyzer2()
     return analyzer
 def catalogo2(lsta,sss,filtrada1,nuevo_cat):
-    return model.catalogo2(lsta,sss,filtrada1,nuevo_cat)
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+    respuesta=model.catalogo2(lsta,sss,filtrada1,nuevo_cat)
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+    return respuesta,delta_time, delta_memory
 def top(listatop):
-    return model.top(listatop)
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+    respuesta=model.top(listatop)
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+    return respuesta,delta_time, delta_memory
+
 # ======================================
 # Funciones para medir tiempo y memoria
 # ======================================

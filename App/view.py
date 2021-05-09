@@ -257,9 +257,15 @@ while True:
         maxH=int(input("Ingrese el(las) hora(s) maxima(s) a trabajar: "))
         maxM=int(input("Ingrese el(los) minuto(s) maximo(s) a trabajar: "))
         maxS=int(input("Ingrese el(los) segundo(s) maximo(s) a trabajar: "))
-        filtrada1=controller.total(cont,miniH,miniM,miniS,maxH,maxM,maxS)
+        resp1=controller.total(cont,miniH,miniM,miniS,maxH,maxM,maxS)
+        filtrada1=resp1[0]
+        memoria_t=resp1[2]
+        tiempo_t=resp1[1]
         nuevo_cat=controller.init2()
-        nuevo_cat=controller.catalogo2(lsta,sss,filtrada1,nuevo_cat)
+        resp2=controller.catalogo2(lsta,sss,filtrada1,nuevo_cat)
+        nuevo_cat=resp2[0]
+        memoria_t+=resp2[2]
+        tiempo_t+=resp2[1]
         generos=lt.newList()
         lista=['POP','REGGAE','DOWN-TEMPO','CHILL-OUT','HIP-HOP','JAZZ AND FUNK','R&B','ROCK','METAL']#VIEW
         for gen in lista:
@@ -269,6 +275,8 @@ while True:
         nombretop=""
         listatop=None
         cantidadT=0
+        sumat=0
+        sumam=0
         while it.hasNext(fua):
             genero=it.next(fua)
             if genero=="POP":
@@ -302,6 +310,8 @@ while True:
             artistas=pra[0][0]
             reproducciones=pra[0][1]
             lista=pra[0][2]
+            sumat+=float(pra[1])
+            sumam+=float(pra[2])
             cantidadT+=reproducciones
             if top<reproducciones:
                 top=reproducciones
@@ -314,9 +324,14 @@ while True:
             print("Para el genero: "+str(genero)+ ' se tiene que hay ' + str(artistas)+ ' artistas y '+ str(reproducciones)+' reproducciones')
             print("Donde el tempo minimo es "+str(minimo)+ " y el maximo es "+ str(maximo))
         print("En total se tienen "+ str(cantidadT) + " reproducciones o tracks en la hora "+ str(miniH)+":"+str(miniM)+":"+str(miniS)+" y la hora "+str(maxH)+":"+str(maxM)+":"+str(maxS))
+        tiempo_t+=sumat
+        memoria_t+=sumam
         print("=====================================")
         print("*************************************")
-        topsin=controller.top(listatop)
+        resp3=controller.top(listatop)
+        topsin=resp3[0]
+        tiempo_t+=resp3[1]
+        memoria_t+=resp3[2]
         lst=topsin[0]
         paaa=topsin[1]
         totalu=lt.size(lst)
@@ -337,7 +352,9 @@ while True:
                 print('Track '+str(x)+':'+str(id) +" con "+str(hashte)+" hashtags y con un vader avg de "+str(vader))
                 lt.addLast(vistos,id)
                 x+=1
-            n+=1 
+            n+=1
+        print("Tiempo [ms]: ", f"{tiempo_t:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{memoria_t:.3f}") 
     else:
         sys.exit(0)
 sys.exit(0)
