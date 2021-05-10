@@ -220,6 +220,7 @@ def req4(caracteristica,minimo,maximo,cont):
     tamano=lt.size(paaa)
     respuesta=(tamano,cantidad2,lst)
     return respuesta
+
 # ==============req 5 =========
 def total(cont,miniH,miniM,miniS,maxH,maxM,maxS):
     mini=datetime.time(miniH,miniM,miniS)
@@ -248,75 +249,8 @@ def newAnalyzer2():
             analyzer[parte]=om.newMap(omaptype='RBT',
                                       comparefunction=compareTracks)
     return analyzer
-def catalogo2(lsta,sss,filtrada1,nuevo_cat):#lsta es la lista de usuario_hashtag, sss la lista de todos los sentiment, newsaw es la lista del om.values en modo de iterar
-    newsaw=it.newIterator(filtrada1)
-    new=it.newIterator(lsta)# Ponerlo en controller
-    itet=it.newIterator(sss)# Ponerlo en otro controllorer junto 
-    while it.hasNext(newsaw):#Model, SE NECESITA EL CATALOGO NUEVO--PASARLO COMO PARAMETRO 
-            l=it.next(newsaw)#DESDE AQUI HASTA DONDE TE MARQUE ABAJO CON &&&&&&&&&&&&&&&&&&&&& VA EN MODEL
-            #cantidad2+=lt.size(l)
-            #print(cantidad2) #Reproducciones
-            nuevo=it.newIterator(l)
-            while it.hasNext(nuevo):
-                pedazo=it.next(nuevo) #Mira cada track cumplido con el primer filtro
-                #ax=mp.get(pedazo,'hashtag')
-                ex=mp.get(pedazo,'tempo')
-                ix=mp.get(pedazo,'horas')
-                ox=mp.get(pedazo,'track_id')
-                ux=mp.get(pedazo,'user_id')
-                ax=mp.get(pedazo,'artist_id')
-                #tax=me.getValue(ax)
-                tex=me.getValue(ex)
-                tix=me.getValue(ix)
-                tox=me.getValue(ox)
-                tux=me.getValue(ux)
-                tax=me.getValue(ax)
-                cantidad=0
-                vader_avg=0
-                while it.hasNext(new):
-                    hashtag=it.next(new) #Buscar el hashtag aqui y su valor vader tambien #Mira cada hashtag 
-                    if hashtag['track_id']==tox:
-                        hasht=hashtag['hashtag'].lower() #Se busca los que sean iguales al track_id (todos los hashtag del track_id respectivo)
-                        while it.hasNext(itet):
-                            senti=it.next(itet) #Se busca basicamente que tenga un valor_vader
-                            if senti['hashtag'].lower()==hasht:
-                                if senti['vader_avg']=='' or senti['vader_avg']==None:
-                                    vader_avg+=0
-                                    cantidad+=1
-                                else:
-                                    cantidad+=1
-                                    vader_avg+=float(senti['vader_avg'])
-                                #if senti['vader_avg']!='' and senti['vader_avg']!=None:
-                                 #   vader_avg+=float(senti['vader_avg'])
-                                  #  cantidad+=1
-                                break
-                        itet=it.newIterator(sss)
-                new=it.newIterator(lsta)
-                nuevodic={}
-                nuevodic['tempo']=float(tex)
-                nuevodic['horas']=tix
-                nuevodic['track_id']=tox
-                nuevodic['artist_id']=tax
-                nuevodic['cantidad']=cantidad
-                nuevodic['user_id']=tux
-                if nuevodic['cantidad']!=0: 
-                    vader_avg=vader_avg/cantidad
-                    nuevodic['vader_avg']=vader_avg
-                    addTrack(nuevo_cat,nuevodic) 
-    return nuevo_cat
-def top(listatop):
-    newisi=it.newIterator(listatop)#NECESITAS CREAR ESTA VARIABLE EN MODEL, PERO PARA ELLO NECESITAS CREAR UNA NUEVA FUNCION QUE TE LLEVE TODO LO DEL TOP HACIA MODEL Y HACER LO DE ABAJO
-    lst=lt.newList("SINGLE_LINKED")#MODEL
-    paaa=lt.newList("SINGLE_LINKED")#MODEL
-    while it.hasNext(newisi):#DESDE AQUI HASTA QUE SE VUELVAS A VER @@@@@@@@@@@@@@@@@@@@@@@ VA EN MODEL
-        pedazo=it.next(newisi)#Esto devuelve un mapa de la lista iterando (mapa de la lista(cada elemento))
-        nex=mp.get(pedazo,'track_id')#Devuelve la llave danceability y el valor respectivo del mapa en forma de diccionario
-            #tax=me.getValue(ax)#Devuelve el valor de danceability del track sacado en el mapa de it.next(video)
-        fex=me.getValue(nex)
-        if lt.isPresent(lst,fex)==0:
-            lt.addLast(paaa,pedazo)
-            lt.addLast(lst,fex)
-    return lst,paaa
+# Funciones utilizadas para comparar elementos dentro de una lista
+
 # Funciones de ordenamiento
 def compareIds(id1, id2):
     """
